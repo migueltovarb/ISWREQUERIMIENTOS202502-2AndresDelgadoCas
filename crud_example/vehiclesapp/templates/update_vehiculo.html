@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Editar Vehículo</h2>
+<form method="post">
+    {% csrf_token %}
+    
+    <div class="mb-3">
+        <label for="id_placa" class="form-label">Placa</label>
+        {{ form.placa }}
+    </div>
+    
+    <div class="mb-3">
+        <label for="id_marca" class="form-label">Marca</label>
+        {{ form.marca }}
+    </div>
+    
+    <div class="mb-3">
+        <label for="id_color" class="form-label">Color</label>
+        {{ form.color }}
+    </div>
+    
+    <div class="mb-3">
+        <label for="id_modelo" class="form-label">Modelo</label>
+        {{ form.modelo }}
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Actualizar Vehículo</button>
+    <a href="{% url 'list_vehiculos' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}
