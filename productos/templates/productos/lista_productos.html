@@ -1,0 +1,166 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Gestión de Productos - Sistema de Inventario{% endblock %}
+
+{% block page_title %}Gestión de Productos{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Card Principal -->
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-boxes"></i>
+                        Lista de Productos
+                    </h6>
+                    <a href="{% url 'crear_producto' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-plus"></i> Registrar Producto
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Filtros y Búsqueda -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <input type="text" 
+                               class="form-control" 
+                               placeholder="Buscar..." 
+                               id="buscarInput"
+                               value="{{ buscar }}">
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control" id="categoriaSelect">
+                            <option value="">Todas las categorías</option>
+                            {% for categoria in categorias %}
+                            <option value="{{ categoria.id }}" 
+                                    {% if categoria.id|stringformat:"s" == categoria_seleccionada %}selected{% endif %}>
+                                {{ categoria.nombre }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control" id="proveedorSelect">
+                            <option value="">Todos los proveedores</option>
+                            {% for proveedor in proveedores %}
+                            <option value="{{ proveedor.id }}"
+                                    {% if proveedor.id|stringformat:"s" == proveedor_seleccionado %}selected{% endif %}>
+                                {{ proveedor.nombre }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-secondary w-100" onclick="aplicarFiltros()">
+                            <i class="fas fa-filter"></i> Filtrar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabla de Productos -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Código</th>
+                                <th>Nombre</th>
+                                <th>Categoría</th>
+                                <th>Proveedor</th>
+                                <th>Precio Compra</th>
+                                <th>Precio Venta</th>
+                                <th>Stock Actual</th>
+                                <th>Stock Mínimo</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for producto in productos %}
+                            <tr class="{% if producto.necesita_reabastecimiento %}table-warning{% endif %}">
+                                <td><strong>{{ producto.codigo }}</strong></td>
+                                <td>{{ producto.nombre }}</td>
+                                <td>{{ producto.categoria.nombre }}</td>
+                                <td>{{ producto.proveedor.nombre }}</td>
+                                <td>${{ producto.precio_compra }}</td>
+                                <td>${{ producto.precio_venta }}</td>
+                                <td>
+                                    <span class="{% if producto.necesita_reabastecimiento %}text-danger font-weight-bold{% endif %}">
+                                        {{ producto.stock_actual }}
+                                    </span>
+                                </td>
+                                <td>{{ producto.stock_minimo }}</td>
+                                <td>
+                                    {% if producto.activo %}
+                                        <span class="badge bg-success">Activo</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactivo</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="/admin/productos/producto/{{ producto.id }}/change/" 
+                                       class="btn btn-sm btn-outline-primary"
+                                       title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="/admin/productos/producto/{{ producto.id }}/delete/" 
+                                       class="btn btn-sm btn-outline-danger"
+                                       title="Eliminar">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="10" class="text-center text-muted py-4">
+                                    <i class="fas fa-box-open fa-2x mb-2"></i><br>
+                                    No se encontraron productos
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Información de stock bajo -->
+                {% with productos_bajo_stock=productos|length %}
+                    {% if productos_bajo_stock > 0 %}
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle"></i>
+                        Mostrando <strong>{{ productos_bajo_stock }}</strong> producto(s)
+                        {% if buscar %}que coinciden con "{{ buscar }}"{% endif %}
+                    </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function aplicarFiltros() {
+    const buscar = document.getElementById('buscarInput').value;
+    const categoria = document.getElementById('categoriaSelect').value;
+    const proveedor = document.getElementById('proveedorSelect').value;
+    
+    let url = '/productos/?';
+    const params = [];
+    
+    if (buscar) params.push(`buscar=${encodeURIComponent(buscar)}`);
+    if (categoria) params.push(`categoria=${categoria}`);
+    if (proveedor) params.push(`proveedor=${proveedor}`);
+    
+    window.location.href = url + params.join('&');
+}
+
+// Permitir buscar con Enter
+document.getElementById('buscarInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        aplicarFiltros();
+    }
+});
+</script>
+{% endblock %}

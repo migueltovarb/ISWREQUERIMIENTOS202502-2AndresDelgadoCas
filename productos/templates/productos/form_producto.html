@@ -1,0 +1,214 @@
+{% extends 'base/base.html' %}
+
+{% block title %}
+    {% if modo == 'crear' %}Crear Producto{% else %}Editar {{ producto.nombre }}{% endif %} - Sistema de Inventario
+{% endblock %}
+
+{% block page_title %}
+    {% if modo == 'crear' %}Crear Nuevo Producto{% else %}Editar Producto: {{ producto.nombre }}{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas {% if modo == 'crear' %}fa-plus{% else %}fa-edit{% endif %}"></i>
+                    {% if modo == 'crear' %}Registrar Nuevo Producto{% else %}Editar Producto{% endif %}
+                </h6>
+            </div>
+            <div class="card-body">
+                <!-- Mostrar mensajes -->
+                {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                {% endfor %}
+                {% endif %}
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <!-- Columna Izquierda -->
+                        <div class="col-md-6">
+                            <!-- Código y Nombre -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ form.codigo.id_for_label }}" class="form-label">
+                                            {{ form.codigo.label }} *
+                                        </label>
+                                        {{ form.codigo }}
+                                        {% if form.codigo.errors %}
+                                        <div class="text-danger small">
+                                            {{ form.codigo.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ form.nombre.id_for_label }}" class="form-label">
+                                            {{ form.nombre.label }} *
+                                        </label>
+                                        {{ form.nombre }}
+                                        {% if form.nombre.errors %}
+                                        <div class="text-danger small">
+                                            {{ form.nombre.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Categoría y Proveedor -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ form.categoria.id_for_label }}" class="form-label">
+                                            {{ form.categoria.label }} *
+                                        </label>
+                                        {{ form.categoria }}
+                                        {% if form.categoria.errors %}
+                                        <div class="text-danger small">
+                                            {{ form.categoria.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ form.proveedor.id_for_label }}" class="form-label">
+                                            {{ form.proveedor.label }} *
+                                        </label>
+                                        {{ form.proveedor }}
+                                        {% if form.proveedor.errors %}
+                                        <div class="text-danger small">
+                                            {{ form.proveedor.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Precios -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ form.precio_compra.id_for_label }}" class="form-label">
+                                            {{ form.precio_compra.label }} *
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            {{ form.precio_compra }}
+                                        </div>
+                                        {% if form.precio_compra.errors %}
+                                        <div class="text-danger small">
+                                            {{ form.precio_compra.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ form.precio_venta.id_for_label }}" class="form-label">
+                                            {{ form.precio_venta.label }} *
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            {{ form.precio_venta }}
+                                        </div>
+                                        {% if form.precio_venta.errors %}
+                                        <div class="text-danger small">
+                                            {{ form.precio_venta.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Columna Derecha -->
+                        <div class="col-md-6">
+                            <!-- Stock -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ form.stock_actual.id_for_label }}" class="form-label">
+                                            {{ form.stock_actual.label }} *
+                                        </label>
+                                        {{ form.stock_actual }}
+                                        {% if form.stock_actual.errors %}
+                                        <div class="text-danger small">
+                                            {{ form.stock_actual.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="{{ form.stock_minimo.id_for_label }}" class="form-label">
+                                            {{ form.stock_minimo.label }} *
+                                        </label>
+                                        {{ form.stock_minimo }}
+                                        {% if form.stock_minimo.errors %}
+                                        <div class="text-danger small">
+                                            {{ form.stock_minimo.errors }}
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Ubicación -->
+                            <div class="form-group mb-3">
+                                <label for="{{ form.ubicacion.id_for_label }}" class="form-label">
+                                    {{ form.ubicacion.label }}
+                                </label>
+                                {{ form.ubicacion }}
+                                {% if form.ubicacion.errors %}
+                                <div class="text-danger small">
+                                    {{ form.ubicacion.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Descripción -->
+                            <div class="form-group mb-3">
+                                <label for="{{ form.descripcion.id_for_label }}" class="form-label">
+                                    {{ form.descripcion.label }}
+                                </label>
+                                {{ form.descripcion }}
+                                {% if form.descripcion.errors %}
+                                <div class="text-danger small">
+                                    {{ form.descripcion.errors }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between">
+                                <a href="{% url 'lista_productos' %}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Volver a la lista
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    {% if modo == 'crear' %}Crear Producto{% else %}Actualizar Producto{% endif %}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

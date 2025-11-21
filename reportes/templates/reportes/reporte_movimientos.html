@@ -1,0 +1,133 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Reporte de Movimientos - Sistema de Inventario{% endblock %}
+
+{% block page_title %}Reporte de Movimientos{% endblock %}
+
+{% block content %}
+<!-- Estadísticas -->
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Movimientos
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_movimientos }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-exchange-alt fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Entradas
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ movimientos_entrada }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-arrow-down fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-danger shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                            Salidas
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ movimientos_salida }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-arrow-up fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Último Mes
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ movimientos_ultimo_mes }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de Movimientos -->
+<div class="card shadow mt-4">
+    <div class="card-header py-3 d-flex justify-content-between align-items-center">
+        <h6 class="m-0 font-weight-bold text-primary">
+            <i class="fas fa-list"></i>
+            Historial de Movimientos
+        </h6>
+    </div>
+    <div class="card-body">
+        {% if movimientos %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Producto</th>
+                        <th>Tipo</th>
+                        <th>Cantidad</th>
+                        <th>Motivo</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for movimiento in movimientos %}
+                    <tr>
+                        <td>{{ movimiento.producto.nombre|default:"N/A" }}</td>
+                        <td>
+                            {% if movimiento.tipo == 'ENTRADA' %}
+                                <span class="badge bg-success">Entrada</span>
+                            {% elif movimiento.tipo == 'SALIDA' %}
+                                <span class="badge bg-danger">Salida</span>
+                            {% else %}
+                                <span class="badge bg-secondary">{{ movimiento.tipo }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ movimiento.cantidad|default:"0" }}</td>
+                        <td>{{ movimiento.motivo|default:"-" }}</td>
+                        <td>{{ movimiento.fecha_movimiento|date:"d/m/Y H:i"|default:"-" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            No hay movimientos registrados en el sistema.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

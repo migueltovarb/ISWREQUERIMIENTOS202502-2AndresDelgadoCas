@@ -1,0 +1,56 @@
+{% extends 'base/base.html' %}
+
+{% block title %}{{ cliente.nombre }} - Sistema de Inventario{% endblock %}
+
+{% block page_title %}Detalle de Cliente{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-user"></i>
+                    Información del Cliente
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Nombre:</strong> {{ cliente.nombre }}</p>
+                        <p><strong>Email:</strong> {{ cliente.email }}</p>
+                        <p><strong>Teléfono:</strong> {{ cliente.telefono|default:"No registrado" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Estado:</strong> 
+                            {% if cliente.activo %}
+                                <span class="badge bg-success">Activo</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactivo</span>
+                            {% endif %}
+                        </p>
+                        <p><strong>Fecha de registro:</strong> {{ cliente.fecha_registro|date:"d/m/Y H:i" }}</p>
+                    </div>
+                </div>
+                
+                {% if cliente.direccion %}
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <p><strong>Dirección:</strong></p>
+                        <p>{{ cliente.direccion|linebreaks }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <a href="{% url 'usuarios:lista_clientes' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver a la lista
+        </a>
+    </div>
+</div>
+{% endblock %}

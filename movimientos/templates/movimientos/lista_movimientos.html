@@ -1,0 +1,149 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Gestión de Movimientos - Sistema de Inventario{% endblock %}
+
+{% block page_title %}Gestión de Movimientos{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Card Principal -->
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fas fa-exchange-alt"></i>
+                        Movimientos de Inventario
+                    </h6>
+                    <div>
+                        <span class="badge bg-success me-2">
+                            <i class="fas fa-arrow-down"></i> {{ total_entradas }} Entradas
+                        </span>
+                        <span class="badge bg-danger">
+                            <i class="fas fa-arrow-up"></i> {{ total_salidas }} Salidas
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Filtros y Búsqueda -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <input type="text" 
+                               class="form-control" 
+                               placeholder="Buscar producto, motivo o responsable..." 
+                               id="buscarInput"
+                               value="{{ buscar }}">
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-control" id="tipoSelect">
+                            <option value="">Todos los tipos</option>
+                            <option value="ENTRADA" {% if tipo_seleccionado == 'ENTRADA' %}selected{% endif %}>Entradas</option>
+                            <option value="SALIDA" {% if tipo_seleccionado == 'SALIDA' %}selected{% endif %}>Salidas</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-secondary w-100" onclick="aplicarFiltros()">
+                            <i class="fas fa-filter"></i> Filtrar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tabla de Movimientos -->
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Producto</th>
+                                <th>Tipo</th>
+                                <th>Cantidad</th>
+                                <th>Motivo</th>
+                                <th>Responsable</th>
+                                <th>Referencia</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for movimiento in movimientos %}
+                            <tr>
+                                <td>{{ movimiento.fecha_movimiento|date:"d/m/Y H:i" }}</td>
+                                <td>
+                                    <strong>{{ movimiento.producto.codigo }}</strong><br>
+                                    <small class="text-muted">{{ movimiento.producto.nombre }}</small>
+                                </td>
+                                <td>
+                                    {% if movimiento.tipo == 'ENTRADA' %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-arrow-down"></i> Entrada
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-arrow-up"></i> Salida
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="{% if movimiento.tipo == 'ENTRADA' %}text-success{% else %}text-danger{% endif %}">
+                                        {{ movimiento.cantidad }}
+                                    </span>
+                                </td>
+                                <td>{{ movimiento.motivo }}</td>
+                                <td>{{ movimiento.usuario }}</td>
+                                <td>
+                                    {% if movimiento.referencia %}
+                                        <small class="text-muted">{{ movimiento.referencia }}</small>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted py-4">
+                                    <i class="fas fa-exchange-alt fa-2x mb-2"></i><br>
+                                    No se encontraron movimientos
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Información de movimientos -->
+                {% if movimientos %}
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle"></i>
+                    Mostrando <strong>{{ movimientos|length }}</strong> movimiento(s)
+                    {% if buscar %}que coinciden con "{{ buscar }}"{% endif %}
+                    {% if tipo_seleccionado %}de tipo {{ tipo_seleccionado }}{% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function aplicarFiltros() {
+    const buscar = document.getElementById('buscarInput').value;
+    const tipo = document.getElementById('tipoSelect').value;
+    
+    let url = '/movimientos/?';
+    const params = [];
+    
+    if (buscar) params.push(`buscar=${encodeURIComponent(buscar)}`);
+    if (tipo) params.push(`tipo=${tipo}`);
+    
+    window.location.href = url + params.join('&');
+}
+
+// Permitir buscar con Enter
+document.getElementById('buscarInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        aplicarFiltros();
+    }
+});
+</script>
+{% endblock %}
